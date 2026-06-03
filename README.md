@@ -1,6 +1,6 @@
 # Simulateur de mention au bac
 
-Application Streamlit pour lire des bulletins PDF et simuler la mention au bac.
+Application Streamlit qui lit les bulletins Pronote PDF, calcule le contrôle continu et simule les épreuves finales.
 
 ## Lancement local
 
@@ -9,6 +9,6 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Déploiement Streamlit Community Cloud
+## Déploiement Streamlit Cloud
 
-Uploader `app.py` et `requirements.txt` dans un dépôt GitHub, puis déployer depuis https://share.streamlit.io/ en choisissant `app.py` comme Main file path.
+Créer un dépôt GitHub avec `app.py`, `requirements.txt` et ce `README.md`, puis sélectionner `app.py` comme fichier principal.

@@ -275,10 +275,34 @@ def matieres_presentes(table: pd.DataFrame, liste):
 
 
 def ajouter_specialite(epreuves: dict, nom: str):
+    """
+    Décompose les spécialités qui ont plusieurs parties au bac.
+
+    Chaque spécialité doit toujours totaliser coefficient 16.
+    Les coefficients décimaux servent uniquement à reproduire la pondération officielle.
+    Exemple physique-chimie : écrit 80 % + ECE/TP 20 % => 12,8 + 3,2 = 16.
+    """
     if nom == "Sciences de l'ingénieur":
+        # Note finale SI = 50 % écrit SI + 25 % sciences physiques + 25 % pratique.
         epreuves["SI écrit"] = 8
         epreuves["Physique liée à la SI"] = 4
         epreuves["TP / pratique SI"] = 4
+
+    elif nom == "Physique-chimie":
+        # Note finale physique-chimie = 80 % écrit + 20 % ECE / TP.
+        epreuves["Physique-chimie écrit"] = 12.8
+        epreuves["TP / ECE physique-chimie"] = 3.2
+
+    elif nom == "SVT":
+        # Note finale SVT = écrit sur 15 points + ECE sur 5 points.
+        epreuves["SVT écrit"] = 12
+        epreuves["TP / ECE SVT"] = 4
+
+    elif nom == "NSI":
+        # À compter de la session 2026 : écrit 75 % + pratique 25 %.
+        epreuves["NSI écrit"] = 12
+        epreuves["NSI pratique"] = 4
+
     else:
         epreuves[nom] = 16
 
@@ -553,6 +577,10 @@ elif st.session_state.etape == 3:
     ajouter_specialite(epreuves_finales, spe1)
     ajouter_specialite(epreuves_finales, spe2)
 
+    st.write("Épreuves finales prises en compte :")
+    for matiere, coef in epreuves_finales.items():
+        st.write(f"- {matiere} : coefficient {coef:g}")
+
     objectif = st.selectbox("Mention demandée", list(SEUILS.keys()), index=3)
     seuil = SEUILS[objectif]
     points_objectif = seuil * coef_total
@@ -578,7 +606,7 @@ elif st.session_state.etape == 3:
     matieres_auto = []
 
     for matiere, coef in epreuves_finales.items():
-        st.markdown(f"#### {matiere} — coefficient {coef}")
+        st.markdown(f"#### {matiere} — coefficient {coef:g}")
         fixer = st.checkbox(f"Fixer la note de {matiere}", key=f"fixer_{matiere}")
         if fixer:
             note = st.slider(f"Note en {matiere}", 0.0, 20.0, 12.0, 0.25, key=f"note_{matiere}")
@@ -653,4 +681,4 @@ elif st.session_state.etape == 3:
     st.subheader("8. Détail des épreuves finales")
     for matiere, note in notes_finales.items():
         coef = epreuves_finales[matiere]
-        st.write(f"- {matiere} : {note:.2f}/20, coefficient {coef}, soit {note * coef:.2f} points")
+        st.write(f"- {matiere} : {note:.2f}/20, coefficient {coef:g}, soit {note * coef:.2f} points")
